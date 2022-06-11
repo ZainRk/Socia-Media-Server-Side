@@ -3,19 +3,24 @@ import bcrypt from "bcrypt";
 // get a User
 export const getUser = async (req, res) => {
   const id = req.params.id;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res
+      .status(400)
+      .json({ message: "Invalid id / No such user exists " });
+  }
 
   try {
     const user = await UserModel.findById(id);
-
     if (user) {
       const { password, ...otherDetails } = user._doc;
 
-      res.status(200).json(otherDetails);
+      return res.status(200).json(otherDetails);
     } else {
-      res.status(404).json("No such user exists");
+      if (!ObjectId.isValid(id))
+        return Error({ status: "No such user exists" });
     }
   } catch (error) {
-    res.status(500).json(error);
+    return res.status(500).json({ message: error.message });
   }
 };
 
